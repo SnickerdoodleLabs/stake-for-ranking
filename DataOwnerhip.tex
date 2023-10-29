@@ -1,193 +1,37 @@
-\section{Data Ownership} 
-\label{section:DataOwnership}
+\section{Stake for Ranking} 
+\label{section:ProtocolDescription}
 
-% General overview defining data as an asset, actors in data economy, and how SDL can expand 
-
-In this section, we will define data ownership, explain why defining data as an asset is tricky, and establish the flow of value in the current data economy.
-
-\subsection{Ownership}
-
-
-% How can individuals control / own their data
-The Snickerdoodle Protocol aims to shift the balance of power within the existing data economy by providing individuals greater control of their data. 
-To do so, we must first understand the value within the existing data economy and what it means to control and own data. 
-
-\begin{definition}
-\label{definition:DataOwnership}
-Data Ownership: If an individual can exclusively control and manage the collection, storage, and usage of an attribute of their data corpus in a secure 
-and private manner, then it can be said that they own that particular data attribute.
-\end{definition}
-
-% The goal of this protocol is to maintain the value in the current data economy while flipping the power structure on its head by giving individuals control of the data they generate. This is consistent with the trend we see in modern legislation (CONTINUE TO GIVE CONTEXT).
-
-Ownership of data is a difficult concept to define. Unlike physical resources, data can be copied indefinitely, is generated constantly, and generally requires 
-technical expertise and extensive cyber infrastructure for collection and value extraction. Because of these properties, the safety of data is crucial to data ownership and 
-makes regulating the use of data inherently difficult.
-
-To illustrate these properties, let us use the example of Alice: a customer shopping at a grocery store. By simply being at the store, Alice has generated data about 
-which store she shopped at and when. When she checks out, she generates data about what products she has bought and what payment method she used. When she leaves, 
-she generates data about how long she has been in the store. All of this data may have value, and several actors may be collecting it. The store may be collecting 
-this data through surveillance or loyalty programs. Her phone may have software collecting her location data. Her credit card company may be tracking her spending 
-habits. In the existing data economy, these entities performing the collection have total sovereignty of these data attributes. They may analyze this data for targeted 
-advertising, conduct market research, or sell it to other parties. In addition, companies collecting this data may take all of these actions with varying standards 
-of privacy, security, or anonymity for Alice. Alice is not likely to have knowledge about what data attributes were collected, who collected it, who has access to it, or how 
-the data is used. She is also not compensated for the value that is extracted from this data, even though she is the entity from whom originated it.
-
-In the above example, the concerns around collection and privacy are immediately apparent, but this example also brings into question what it means to own data. 
-In Alice's case, her data is being collected by third parties who may sell or exchange it with other parties. Due to the infinite duplicability of digital data, any 
-such exchange results in both parties possessing the data. In this case, who actually owns the data? Is it the party that collected it? Is it collectively owned by 
-all parties that are currently storing it? Or is it owned by the party that originated it (Alice)? In the existing model, data is owned by the entities that store it, 
-and may be legally attributable to the entity that collected it (CITE). According to definition \ref{definition:DataOwnership}, Alice would have control of her data 
-if she knew what aspects about her were being observed, had control over who was able to access the information, and the infrastructure used to collect, store, and 
-access the data did so safely.
-
-% Feel like with other sections this has become redundant
-% I've like the ideas in here so have commented it out for now. We can un-comment if we delete other sections that discuss this ()
-%
-% In the case of data, privacy and security are critically important since compromised data is no longer self-sovereign. If another party has gained access to the data, it is virtually impossible to maintain data ownership as exclusivity has been lost. This is why the Snickerdoodle Protocol aims to provide privacy and security by exchanging data insights rather than the data itself. Additionally, data management should be easy for the user.
-
-\subsection{Data as an Asset}
-% Data has value and can be treated as an asset. How is it different/similar to traditional assets
-% https://money.cnn.com/news/newsfeeds/articles/stocktwits/pointsandfigures_9937.html?iid=EL#:~:text=Commodities%20are%20assets%2C%20but%20unlike,can%20derive%20out%20of%20them.
-In an information economy, data is the most fundamental commodity there is. To understand the individualized data economy, we must highlight the difference between assets 
-and commodities. While commodities are an asset class, they have unique properties. Unlike most other asset classes, commodities are traded at high volume. While it is 
-possible to purchase small volumes of commodities, they are often illiquid due to the markets operating at high volumes. While fractional vehicles like ETFs do exist, 
-these are fundamentally not equivalent, as they represent a symbolic debt obligation and not the resource itself. For example, it is possible to buy 
-an individual gallon of oil but much harder to sell it as the markets do not trade oil by the gallon. Conversely, it is much easier to sell a thousand barrels of the 
-same oil since the commodities markets trade at these quantities regularly. In much the same way, individual data is not valuable in today's data economy and is almost 
-exclusively handled in the aggregate.
-
-There are cases in which individualized markets have developed around commodities. For example, in the wake of the 2008 financial crisis, consumers rushed to purchase gold 
-as trust in financial assets, currencies, and markets plummeted. Nations and banks often trade in gold in large quantities, and as a result, gold markets trade-in units 
-ranging from the thousands to the millions of ounces. To facilitate the liquidity of consumer gold, several gold purchasing operations have sprung up to provide liquidity to the 
-individual and aggregate gold for commodities markets. Because of the non-triviality of data ownership (see below), this infrastructure has yet to be created for data. 
-This is what the Snickerdoodle Protocol aims to enable.
-
-
-\subsubsection{Utility of Data}
-% What can we do with data
-
-% What is the value of data 
-%.      How can people get value
-%       How can businesses get value
-
-Large scale data analysis has provided great utility in the twenty-first century and has revolutionized every industry from supply chain to medicine, 
-biotech, sports, and self-driving cars. Most of these applications require substantial computational resources, such as using machine learning to 
-generate human faces and stories, to less complex tasks like finding the quickest route home. This also leads to undesirable outcomes such as 
-tracking individuals without their knowledge or consent. 
-
-The utility of data comes from the ability to analyze it and and produce $\mathit{insights}$, see \ref{definition:Insight}. Insights represent actionable intelligence 
-derived from a data set. As an example, Google uses an individual's search history to learn a preference so that a relevant advertisement may be served. A self-driving 
-car analyzes data from its sensors to learn that the traffic light turned red and it should stop.
-
-\subsubsection{An individual's role in the data economy} 
-%TODO moving this to the top bc I think it'll help if flow better -- not sure where on the top it fits the best
-% What is the role of an individual right now?
-% Looking at the flow how can an individual's role be expanded
-
-While the data economy is said by the World Economic Forum to be valued around \$3 trillion at the time of writing, the primary lack of incentive alignment 
-in the modern data economy is that individual generating data do not have control over how their data is being used and is not compensated for their role 
-in the data economy. Different governments recognize the need to give users control, such as the GDPR and CCPA. 
- Another problem is that the lack of ownership and control of data leads to ways for governments to get around surveillance laws. Instead 
-of getting a warrant to view individual data, governments can buy the data from data brokers. This creates an opaque way for governments to spy on individuals. 
-For example, the U.S. government’s ICE agency created an extensive database through publicly available information and data brokers that allow them to track 
-everyone in the U.S. without a warrant.
-
-% Due to how tricky it is to define data ownership, our protocol focuses on allowing users to control data they they generate. Specifically we want to enable a protocol that gives users to safely managed how their data is collected, stored, and shared. Additionally, parties that are interested in subscribing to individual's data can do so without compromising the safety of that data. The protocol should also maintain the authenticity and interoperability of data to ensure that the data being process is valid and usable.
-
-%        How technically they can do this -- Introduce data wallet
-
-%  Data asset life cycle
-% collect/store/share/manage/own
-
-\subsubsection{Properties of Data}
-% trying italic special sections not sure if it works
-
-It's worth highlighting that when data is treated as an asset, the value of the data asset can depend on the properties of that data. The $\mathit{utility}$ of 
-the insights that data can provide will dictate how valuable the data is. $\mathit{Privacy}$ of the data is vital in creating value out of data. If data is not private, 
-then there no property of scarcity. An asset without scarcity is worthless. Worse, the lack of privacy incentives enables mass surveillance.
-Similarly, $\mathit{security}$ is deeply tied to the value of data as an asset. Data that is not secure can easily be stolen or can be rendered unusable. 
-Data should be $\mathit{interoperable}$, so it can be used across many platforms. If a user's data is encoded via a proprietary format or cannot be moved outside 
-of a particular silo, there will be less demand for the data set. Mechanisms to fascilitate the $\mathit{authenticity}$ of data are also required. If the data can 
-easily be faked or modified, then the insights derived from the data set become uncertain.
-
-
-% good points I had to delete:
-% hard to maintain privacy when it is shared
-% manage the deletion of data
-% maintain forward and backward secrecy
-% security in all forms (storage and transit)
-% needs to be easy to do maintain good security practices and patch bugs
-% Integrate with other providers and identity management solutions
-% Authenticity and Privacy are sometimes at odds -- I want Cali DMV to validate I am over 21 but if they vouch for me other people know I am a Cali resident
-
-
-% When turning data into an asset, there are important properties that need to be considered. Who gets to see the asset (privacy), how secure is the asset(security), how easy it is to get value out of the asset (interoperability), and is the asset legitimate (authenticity).  
-
-
-\subsection{Flow of Data and Value in the Data Economy}
-\label{section:Actors}
-% TODO should we define verified and unverified data?
-% Who is involved in the data economy
-%.    Break down into personas
-%.    Break down how data flows
-
-\begin{figure*}[!htbp] 
-    \centering
-    \begin{tikzpicture}
-      \path[mindmap,concept color=purple!60,text=black]
-        node[concept] {Data Economy}
-        [clockwise from=0]
-        child[concept color=violet!20] {
-          node[concept] {Data Collectors}
-          [clockwise from=90]
-          child { node[concept] {Custodian} }
-          child { node[concept] {Aggregator and Analyzer} }
-          child { node[concept] {Subscriber} }
-        }  
-        child[concept color=violet!20] { node[concept] {Data Owner} }
-        child[concept color=violet!20] { node[concept] {Data Owner} };
-    \end{tikzpicture}
-    \caption{The actors in the data economy.}
-    \label{fig:DataActors}
-\end{figure*}
-
-The data economy is a complex system that collects data on individuals, shares that data with other actors, and runs analysis on that data. This flow is 
-necessary to extract value from data. Individuals generating the data sets do not necessarily have a good way to take advantage of their data, and those interested 
-in the data are not the entities that generate it. This dynamic is at the heart of the data economy. One group generates the data, and the other wants to gain 
-insight from that data. The rest of the actors exist to provide infrastructure to support that dynamic.
-
-\subsubsection{Actors}
-
-We define the generator of the data as the $\mathit{owner}$ and the actor who is interested in the data as the $\mathit{subscriber}$. Being the entity that 
-creates the data, the owner should have ownership rights and thus control how their data is used. The subscriber is interested in gaining temporary access 
-to that data and running an $\mathit{algorithm}$ or $\mathit{functional transformation}$ on a large data set to gain actionable intelligence. It's worth 
-highlighting that, in our definition, the subscriber is only interested in the utility of the information embedded in the data, not the data itself.
-
-Other actors in the economy provide the infrastructure. $\mathit{Collectors}$ are the actors who monitor and collect data on owners. $\mathit{Custodians}$ 
-store that data. Because the utility of data increases when combined with other data, the $\mathit{aggregator}$ aggregates data from different custodians 
-and makes it easy to run analysis, or algorithms to generate insights.
-
-Subscribers pay for the utility, and that payment flows back down through the economy. Also, note that the same entity can play multiple roles. E.g. Google 
-is a collector, custodian, aggregator, and subscriber for ads on web searches. Subscribers pay Google to run an algorithm that analyzes people 
-and gives ads to those they think are interested in the subscriber's product. Data owners are the people using Google search. They are getting back a free 
-online search and pay Google by seeing ads and allowing Google to control the data.
-
-A self-sovereign data economy requires the data owner must own their data and control how it is used. The owner must have granular control over the 
-the collection, storage, aggregation, and algorithms that run on their data. Additionally, payment must be distributed equitably to the parties in this 
-economy such that incentives amongst all actors are aligned.
-
-\subsubsection{Actors in the Protocol}
-% For our version 1 how are we going to break down the actors/personas
-%     Individual's / end users
-%.    Businesses
-%     DAO
-%.    SDL
-We will simplify the actors for the initial version of the Protocol. The users of the protocol are data owners who will collect, store, 
-and manage their data from a $\mathit{data wallet}$ (for more on data wallet, see \ref{section:DataWallet}). The data wallet will allow people to 
-provide auditable consent to aggregation and allow certain algorithms or functional transformations to run on their data set by minting a non-transferable consent NFT 
-(to learn more about the on-chain consent and off chain aggregation architecture, see sections \ref{section:OnChain} and \ref{section:OffChain} respectively). 
-Lastly, consenting data wallets will send the resulting anonymized insights to an aggregation provider, which will allow businesses to see the insights they have paid 
-for (see \ref{section:InsightService}). 
-
-General implementation details are given in section \ref{section:Implementation} with areas for future improvement given in section \ref{section:Future}.
+Stake-for-ranking attempts to address some of the shortcomings of closed-source, proprietary recommender systems by removing the need for a centralized party to curate content and its relative importance to an end user and allow for the natural and direct alignment of incentives between content authors and their audiences. 
+Transparent ranking mechanics due to auditable on-chain logic
+Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
+Can be coupled with ERC-7529 for enhanced spoofing protection and domain-based moderation
+Content attributes written to public blockchain and content assets like text and images pinned to content-addressable storage makes it difficult for centralized entities to build user profiles without consent of the end user of the recommender system (since they could ostensibly use any RPC provider or IPFS/Arweave gateway)
+Components of the primitive:
+content object is an on-chain asset owned by a content author
+Can be an erc-721 NFT, an ERC-20 token, or any other contract-based asset type. It is assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
+Contains a data structure mapping a tag/key/attribute to a weight. This mapping represents an infinite dimensional sparse representation vector of weights. tagi →wi
+The representation vector is limited to a fixed, finite number of non-zero entries, and the magnitude of the non-zero entries is directly proportional to the amount of token the content author wishes to stake to that row’s associated keyword.
+A likeness metric:
+This is an off-chain function
+Takes as input:
+A user state vector
+A content object’s representation vector
+Calculates as output:
+A number between 0 and 1
+0 is no match
+1 is perfect match
+Examples:
+Dot product
+Normalized euclidean distance
+A representation vector of a content object is constructed by assigning weights to relevant tags. 
+The weight attributable to a tag is proportional to the amount of token staked w.r.t that tag
+Candidate weighting cost function: stakei = 1.0001wi  
+As the desired target weight increases linearly, the amount of stake required to achieve that target weight increases exponentially, disincentivizing frivolous weighting of genuinely unrelated tags and also normalizing the weighting power of large token holders to make it more difficult to grossly overweight high-demand tags. 
+A non-zero minimum weight could be imposed to further disincentivize applying small staking amounts to tags that are not actually relevant to a content object
+There is economic cost to curating the representation vector of a content object
+Assigning weight to tags that are not actually relevant to your content object locks up capital 
+When a content author stakes token to a given tag/keyword in their content object, this results in a registration of that content object in a global linked list that tracks all content objects staking that particular tag; the content object with the most stake for a given tag takes the head slot, second most gets the second slot, and so on. 
+Thus, the global ordering for a tag effectively forms an open order book for ranking of content associated with a given tag. Content authors and end users both have direct insight into the relative ranking of content for a given tag/attribute. 
+Staking economic value does not result in rewards issued directly from the protocol itself to the depositor, instead it boosts the discoverability and visibility of a content object in a marketplace setting, leading to greater likelihood of end user transactions and thus revenue. Depositors can rearrange their stake among different tags as they search the state space for the correct tags for their target audience and can reclaim all of their stake and exit the market if necessary. This is an important distinction from existing staking models. 
+Popular tags (i.e. tags that are relevant to the largest number of users) will cost more for a higher number of impressions while tags associated with more specialized audiences will likely be cheaper
+The economic cost of attribute staking coupled with ERC-7529 ensures that spoofing content to attack the recommender system is difficult and costly and makes it simple to implement client-side verification. Additionally, staked tokens are subject to forfeiture if the token holder community deems the content object to be detrimental to the associated marketplace. Therefore, stake for ranking has a natural resistance to sybil attacks from bad authors and incentives to construct an accurate representation vector for their content since it requires capital to be locked in proportion to the representation weights. 
