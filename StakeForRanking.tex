@@ -1,12 +1,16 @@
 \section{Stake for Ranking} 
 \label{section:ProtocolDescription}
 
-Stake-for-ranking attempts to address some of the shortcomings of closed-source, proprietary recommender systems by removing the need for a centralized party to curate content and its relative importance to an end user and allow for the natural and direct alignment of incentives between content authors and their audiences. 
-Transparent ranking mechanics due to auditable on-chain logic
-Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
-Can be coupled with ERC-7529 for enhanced spoofing protection and domain-based moderation
-Content attributes written to public blockchain and content assets like text and images pinned to content-addressable storage makes it difficult for centralized entities to build user profiles without consent of the end user of the recommender system (since they could ostensibly use any RPC provider or IPFS/Arweave gateway)
-Components of the primitive:
+\subsection{Preliminaries}
+Stake-for-ranking attempts to address some of the shortcomings of closed-source, proprietary recommender systems by removing the need for a centralized party to curate content and its relative importance to an end user and allow for the natural and direct alignment of incentives between content authors and their audiences. It contributes:
+\begin{itemize}
+    \item Transparent ranking mechanics due to auditable on-chain logic
+    \item Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
+    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced spoofing protection and DNS/domain-based moderation
+    \item enhanced end-user privacy due to decentralized content delivery
+\end{itemize}
+
+\subsection{Components of the Primitive}
 content object is an on-chain asset owned by a content author
 Can be an erc-721 NFT, an ERC-20 token, or any other contract-based asset type. It is assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
 Contains a data structure mapping a tag/key/attribute to a weight. This mapping represents an infinite dimensional sparse representation vector of weights. tagi →wi
