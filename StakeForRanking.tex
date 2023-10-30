@@ -6,36 +6,74 @@ Stake-for-ranking attempts to address some of the shortcomings of closed-source,
 \begin{itemize}
     \item Transparent ranking mechanics due to auditable on-chain logic
     \item Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
-    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced spoofing protection and DNS/domain-based moderation
+    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based moderation
     \item enhanced end-user privacy due to decentralized content delivery
 \end{itemize}
 
 \subsection{Components of the Primitive}
-content object is an on-chain asset owned by a content author
-Can be an erc-721 NFT, an ERC-20 token, or any other contract-based asset type. It is assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
-Contains a data structure mapping a tag/key/attribute to a weight. This mapping represents an infinite dimensional sparse representation vector of weights. tagi →wi
-The representation vector is limited to a fixed, finite number of non-zero entries, and the magnitude of the non-zero entries is directly proportional to the amount of token the content author wishes to stake to that row’s associated keyword.
-A likeness metric:
-This is an off-chain function
-Takes as input:
-A user state vector
-A content object’s representation vector
-Calculates as output:
-A number between 0 and 1
-0 is no match
-1 is perfect match
+\subsubsection{Content Objects}
+A content object is an on-chain asset (a smart contract) owned or operated by a content author and can be an ERC-721 NFT, an ERC-20 token, or any other contract-based asset type. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
+
+A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute (i.e. a human-readable tag) to a weight: 
+
+\begin{equation}
+    attribute_i \rightarrow w_i
+\end{equation}
+
+This mapping represents an infinite dimensional sparse vector of weights. The weight vector is limited to a fixed, finite number of non-zero entries, and the magnitude of the non-zero entries is proportional to the amount of token the content author wishes to stake to that row’s associated keyword as discussed later in section \ref{PrimitiveMechanics}.
+
+\subsubsection{Global Ranking Linked List}
+
+\input{FactoryRankingTikz}
+The contract architecture is assumed to be based on a factory pattern, although it is not strictly necessary. A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
+
+
+
+\subsubsection{Likeness metric}
+This is an off-chain function that takes as input:
+
+\begin{itemize}
+    \item a user state vector
+    \item a conent object's representation vector
+\end{itemize}
+and calculates as output a number between 0 and 1. We assign 0 as beign no match 1 is a perfect match.
+
 Examples:
 Dot product
 Normalized euclidean distance
+
+\subsection{Interface Specifications}
+\label{InterfaceDefinition}
+
+\subsubsection{Content Objects}
+
+Content objects must have functions for staking and destaking economic value with respect to an attribute that is relative to the content. For programming convenience in the context of the Ethereum Virtual Machince (which inherently works best in unsigned integers) weights, $w_i$ can only take on nonnegative integer values. 
+
+\subsubsection{Global Ranking Linked List}
+
+Client-side software will benefit from the presence of a single contract where global ranking information can be obtained. The global ranking contract will mostly be used for reading ranking data. 
+
+register a new attribute
+
+\subsection{Primitive Mechanics}
+\label{PrimitiveMechanics}
 A representation vector of a content object is constructed by assigning weights to relevant tags. 
 The weight attributable to a tag is proportional to the amount of token staked w.r.t that tag
-Candidate weighting cost function: stakei = 1.0001wi  
+Candidate weighting cost function: 
+
+\begin{equation}
+    stake_i = 1.0001^{w_i}
+\end{equation}
+
 As the desired target weight increases linearly, the amount of stake required to achieve that target weight increases exponentially, disincentivizing frivolous weighting of genuinely unrelated tags and also normalizing the weighting power of large token holders to make it more difficult to grossly overweight high-demand tags. 
 A non-zero minimum weight could be imposed to further disincentivize applying small staking amounts to tags that are not actually relevant to a content object
+
 There is economic cost to curating the representation vector of a content object
 Assigning weight to tags that are not actually relevant to your content object locks up capital 
 When a content author stakes token to a given tag/keyword in their content object, this results in a registration of that content object in a global linked list that tracks all content objects staking that particular tag; the content object with the most stake for a given tag takes the head slot, second most gets the second slot, and so on. 
 Thus, the global ordering for a tag effectively forms an open order book for ranking of content associated with a given tag. Content authors and end users both have direct insight into the relative ranking of content for a given tag/attribute. 
+
 Staking economic value does not result in rewards issued directly from the protocol itself to the depositor, instead it boosts the discoverability and visibility of a content object in a marketplace setting, leading to greater likelihood of end user transactions and thus revenue. Depositors can rearrange their stake among different tags as they search the state space for the correct tags for their target audience and can reclaim all of their stake and exit the market if necessary. This is an important distinction from existing staking models. 
-Popular tags (i.e. tags that are relevant to the largest number of users) will cost more for a higher number of impressions while tags associated with more specialized audiences will likely be cheaper
+Popular tags (i.e. tags that are relevant to the largest number of users) will cost more for a higher number of impressions while tags associated with more specialized audiences will likely be cheaper.
+
 The economic cost of attribute staking coupled with ERC-7529 ensures that spoofing content to attack the recommender system is difficult and costly and makes it simple to implement client-side verification. Additionally, staked tokens are subject to forfeiture if the token holder community deems the content object to be detrimental to the associated marketplace. Therefore, stake for ranking has a natural resistance to sybil attacks from bad authors and incentives to construct an accurate representation vector for their content since it requires capital to be locked in proportion to the representation weights. 
