@@ -1,13 +1,9 @@
 \begin{figure}[!ht] 
     \centering
     % Define block styles
-    \tikzstyle{daoblock} = [diamond, draw, fill=red!20, 
-    text width=6em, text centered, rounded corners, minimum height=4em] 
     \tikzstyle{factoryblock} = [rectangle, draw, fill=blue!20, 
-    text width=6em, text centered, rounded corners, minimum height=4em]
+    text width=8em, text centered, rounded corners, minimum height=4em]
     \tikzstyle{instance} = [circle, draw, fill=violet!20, 
-        text width=6em, text centered, rounded corners, minimum height=4em]
-    \tikzstyle{actorblock} = [rectangle, draw, fill=green!20, 
         text width=6em, text centered, rounded corners, minimum height=4em]
     \tikzstyle{line} = [draw, -latex']
     
@@ -24,6 +20,6 @@
         \path [line] (FACTORY) -| node [near start, above] {deploy} (CONTRACT3);
         \path [line] (CONTRACT3) -- node [near end, right] {claim rank} (FACTORY);
     \end{tikzpicture}
-    \caption{Stake for ranking easily works with factory patterns since the contract factory serves a a natural location to store global ranking data structures. It also allows for programmatic exclusion of content not deployed through the factory itself which can be useful for certain applications.}
+    \caption{Stake for ranking works well with factory patterns since the contract factory serves as a natural location to store global ranking data structures. It also allows for programmatic exclusion of content not deployed through the factory itself which can be useful for certain applications.}
     \label{fig:FactoryRanking}
   \end{figure}

@@ -14,40 +14,39 @@ Stake-for-ranking attempts to address some of the shortcomings of closed-source,
 \subsubsection{Content Objects}
 A content object is an on-chain asset (a smart contract) owned or operated by a content author and can be an ERC-721 NFT, an ERC-20 token, or any other contract-based asset type. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
 
-A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute (i.e. a human-readable tag) to a weight: 
+A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute string (i.e. a human-readable tag) to a weight: 
 
 \begin{equation}
     attribute_i \rightarrow w_i
 \end{equation}
 
-This mapping represents an infinite dimensional sparse vector of weights. The weight vector is limited to a fixed, finite number of non-zero entries, and the magnitude of the non-zero entries is proportional to the amount of token the content author wishes to stake to that row’s associated keyword as discussed later in section \ref{PrimitiveMechanics}.
+This mapping represents an infinite dimensional sparse vector of weights. The weight vector is limited to a fixed, finite number of non-zero entries, and the magnitude of the non-zero entries is proportional to the amount of token the content author wishes to stake to that row’s associated keyword as discussed later in section \ref{PrimitiveMechanics}. For programming convenience in the context of the Ethereum Virtual Machine \cite{wood2014ethereum} (which works nicely with unsigned integers) weights, $w_i$ are taken to be non-negative integer values. 
 
 \subsubsection{Global Ranking Linked List}
 
 \input{FactoryRankingTikz}
-The contract architecture is assumed to be based on a factory pattern, although it is not strictly necessary. A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
+The smart contract architecture is assumed to be based on a factory pattern, although it is not strictly necessary. A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
 
+Global ranking can be stored in a mapping variable that maps from an attribute string to a doubly linked list:
 
+\begin{equation}
+    attribute_i \rightarrow \{(2^{256}-1) \leftrightarrow w_{i,...} \leftrightarrow w_{i,n+1} \leftrightarrow w_{i,n} \leftrightarrow w_{i,n-1} \leftrightarrow w_{i,...} \leftrightarrow 0\}
+\end{equation}
+
+The weight, $w_{i,n}$, belongs to the $n^{th}$ highest ranked content object for the $i^{th}$ attribute such that $w_{i,n} < w_{i,n+1}$. Notice that the head of any attribute's linked list is the maximum value of a $uint256$ and the tail value is $0$, thus $0 < w_{i,n} < (2^{256}-1); \forall i,n$. 
+
+Linked lists are ideal for tracking dynamically allocated content rankings in a smart contract setting due to the constant complexity of insertion and deletion of a list entry. Furthermore, entries can easily be traversed in a paginated fashion in either ascending or descending order. 
 
 \subsubsection{Likeness metric}
-This is an off-chain function that takes as input:
 
-\begin{itemize}
-    \item a user state vector
-    \item a conent object's representation vector
-\end{itemize}
-and calculates as output a number between 0 and 1. We assign 0 as beign no match 1 is a perfect match.
-
-Examples:
-Dot product
-Normalized euclidean distance
+A content-based recommender system must prescribe a metric by which a content object can be determined to be relevant to an end user. This is an off-chain function that takes as input a user's historical state vector and content object's weight vector and returns a score. We assume in this work that a perfect match would be normalized to $1$ and a perfect miss would be $0$.
 
 \subsection{Interface Specifications}
 \label{InterfaceDefinition}
 
 \subsubsection{Content Objects}
 
-Content objects must have functions for staking and destaking economic value with respect to an attribute that is relative to the content. For programming convenience in the context of the Ethereum Virtual Machince (which inherently works best in unsigned integers) weights, $w_i$ can only take on nonnegative integer values. 
+Content objects must have functions for staking and destaking economic value with respect to an attribute that is relative to the content. 
 
 \subsubsection{Global Ranking Linked List}
 
