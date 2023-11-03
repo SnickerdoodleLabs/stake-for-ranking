@@ -1,0 +1,22 @@
+\begin{figure}[!ht] 
+    \centering
+    % Define block styles
+    \tikzstyle{factoryblock} = [rectangle, draw, fill=blue!20, 
+    text width=8em, text centered, rounded corners, minimum height=4em]
+    \tikzstyle{instance} = [circle, draw, fill=violet!20, 
+        text width=6em, text centered, rounded corners, minimum height=4em]
+    \tikzstyle{line} = [draw, -latex']
+    
+    \begin{tikzpicture}[node distance = 2cm, auto]
+        % Place nodes
+        \node [factoryblock,  node distance=5cm] (FACTORY) {Recommender System};
+        \node [instance, left of=FACTORY,  node distance=5cm] (CONTRACT1) {Content Publisher};
+        \node[charlie,mirrored,minimum size=1.5cm, right of=FACTORY, node distance=5cm] (USER) {End User};
+        % Draw edges
+        \path [line] (CONTRACT1) -- node [above] {publish} (FACTORY);
+        \path [line] (FACTORY) -- node [above] {serve} (USER);
+        \draw [line] (USER) [out=150, in=30] to node [above] {engagement} (CONTRACT1);
+    \end{tikzpicture}
+    \caption{Recommender systems are pervasive in all aspects of modern digital commerce. They are discoverability broker between publishers of content and end users searching for relevant information.}
+    \label{fig:RecommenderActors}
+  \end{figure}

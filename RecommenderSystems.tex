@@ -1,5 +1,6 @@
 \section{Recommender Systems}
 
+\input{RecommenderActorsTikz}
 Recommender systems are pervasive in all aspects of modern digital commerce, social media, and digital advertising networks \cite{resnick1997recommender} \cite{lops2011content} \cite{gomez2015netflix}. Google, Amazon, Meta, Twitter, etc. all face the problem of how to suggest relevant content to their users. These systems face challenges in terms of scalability, transparency, and moderation \cite{wang2022trustworthy}. 
 
 Serving the recommendations and training the associated models is a significant engineering challenge with a great deal of subjectivity present in determining what makes a recommendation relevant, particularly for content-based recommender systems. The mere act of a client-side application selecting a recommended content entity reveals information about the end-user to the broker of the recommendation which would allow the broker to potentially identify end users after multiple sessions and build user models without end user consent \cite{boutet2018collaborative}. The lack of economic repercussions for bad content authors and lack of incentive alignment between brokers, authors, and end users means recommender systems deployed in marketplace settings are highly susceptible to detrimental manipulation by all parties.

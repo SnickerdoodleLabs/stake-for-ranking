@@ -6,11 +6,11 @@ Stake for ranking attempts to address some of the shortcomings of closed-source,
 \begin{itemize}
     \item Transparent ranking mechanics via auditable on-chain logic
     \item Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
-    \item Enhanced end-user privacy due to decentralized content delivery
+    \item Enhanced end-user privacy due to decentralized content delivery and rankings hosted on a public blockchain
     \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based moderation
 \end{itemize}
 
-\subsection{Components of the Primitive}
+\subsection{Components}
 \subsubsection{Content Objects}
 \label{ContentObjectDefinition}
 
@@ -23,13 +23,13 @@ We take the convention that the weight given to  attribute $i$ is the value of t
     \label{eq:weightVector}
     attribute_i \rightarrow w_{n,i}
 \end{equation}
- The weight vector, $w_n$, is limited to a finite number of non-zero entries, and the magnitude of the non-zero entries is proportional to the amount of token the content author wishes to stake to that row’s associated keyword as discussed later in section \ref{PrimitiveMechanics}. 
+ The weight vector, $w_n$, is limited to a finite number of non-zero entries (the exact number would depend on the usecase), and the magnitude of the non-zero entries is proportional to the amount of token the content author wishes to stake to that row’s associated keyword as discussed later in section \ref{PrimitiveMechanics}. 
 
-\subsubsection{Global Ranking Linked List}
+\subsubsection{Global Ranking}
 \label{GlobalRankingDefinition}
 
 \input{FactoryRankingTikz}
-The smart contract architecture is assumed to be based on a factory pattern (as depicted in figure \ref{fig:FactoryRanking}), although it is not strictly necessary. A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
+The smart contract architecture is assumed to be based on a factory pattern (as depicted in figure \ref{fig:FactoryRanking}), although it is not strictly necessary. Contract factories are a common pattern found in NFT marketplaces (like Rarible and Opensea) and decentralized finance protocols (like Uniswap and Aave). A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
 
 Global ranking can be stored in a mapping variable that maps from an attribute string to a doubly linked list:
 
@@ -179,7 +179,7 @@ function getTagTotal(string memory tag)
     returns (uint256);
 \end{lstlisting}
 
-\subsection{Primitive Mechanics}
+\subsection{Mechanics}
 \label{PrimitiveMechanics}
 
 \subsubsection{Economics}
@@ -206,7 +206,7 @@ Global rankings are themselves hosted directly on an appropriated public blockch
 
 \subsubsection{Searchability and Spoof Resistance}
 
-While staking economic value helps to mitigate the effectiveness of sybil attacks against the content corpus of recommender system, it alone cannot prevent a publisher for masquerading as another publisher. Leveraging the standard proposed in ERC-7529 (see \cite{chapman2023erc7529}) would allow an end user client to independently verify that a content object is associated with a know DNS domain (e.g. snickerdoodle.com). 
+While staking economic value helps to mitigate the effectiveness of sybil attacks against the content corpus of the recommender system, it alone cannot prevent a publisher for masquerading as another publisher. Leveraging the standard proposed in ERC-7529 (see reference \cite{chapman2023erc7529} for details) would allow an end user client to independently verify that a content object is associated with a know DNS domain (e.g. snickerdoodle.com). 
 
 An additional benefit of being able to link a business' DNS domain with a smart contract-based content object is searchability. A user can easily find content posted by domains they are familiar with using the discoverability feature of ERC-7529, then leverage the global ranking namespace to find other content that is closely related that content based on the staked attributes. 
 
