@@ -6,8 +6,8 @@ Stake for ranking attempts to address some of the shortcomings of closed-source,
 \begin{itemize}
     \item Transparent ranking mechanics via auditable on-chain logic
     \item Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
-    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based moderation
     \item Enhanced end-user privacy due to decentralized content delivery
+    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based moderation
 \end{itemize}
 
 \subsection{Components of the Primitive}
@@ -44,6 +44,7 @@ This means that content objects that do not assign a non-zero weight to attribut
 Doubly linked lists are an ideal data structure for tracking dynamically allocated content rankings in a smart contract setting due to the constant complexity of insertion and deletion of a list entry (gas costs remain constant as the size of the list grows). Furthermore, entries can easily be traversed in a paginated fashion in either ascending or descending order. 
 
 \subsubsection{Likeness metric}
+\label{LikenessMetricDefinition}
 
 A content-based recommender system must prescribe a metric by which a content object can be determined to be relevant to an end user. This is an off-chain function that takes as input a user's historical interactions and content object's weight vector and returns a score. We assume in this work that a perfect match would be normalized to $1$ and a perfect miss would be $0$. For completeness, a candidate process is proposed for determining relevance of a content object to an end user.
 
@@ -124,6 +125,7 @@ function initializeTag(string memory tag, uint256 _newHead) external;
 
 /// @notice Inserts a new listing into the doubly-linked Listings mapping
 /// @dev _newSlot <-> _existingSlot 
+/// @dev Should only be called by content objects
 /// @param tag Human readable string denoting the target tag to stake
 /// @param _newSlot New linked list entry that will point to the Listing at _existingSlot 
 /// @param _existingSlot Listing slot that will be pointed to by the new Listing at _newSlot 
@@ -131,17 +133,20 @@ function insertUpstream(string memory tag, uint256 _newSlot, uint256 _existingSl
 
 /// @notice Inserts a new listing into the doubly-linked Listings mapping
 /// @dev _existingSlot <-> _newSlot
+/// @dev Should only be called by content objects
 /// @param tag Human readable string denoting the target tag to stake
 /// @param _existingSlot Listing slot that will be pointed to by the new Listing at _newSlot  
 /// @param _newSlot New linked list entry that will point to the Listing at _existingSlot 
 function insertDownstream(string memory tag, uint256 _existingSlot, uint256 _newSlot) external;
 
 /// @notice Replaces an existing listing that has expired (works for head and tail listings)
+/// @dev Should only be called by content objects
 /// @param tag Human readable string denoting the target tag to stake
 /// @param _slot The expired slot to replace with a new listing
 function replaceExpiredListing(tring memory tag, uint256 _slot) external;
 
 /// @notice removes a listing in the marketplace listing map
+/// @dev Should only be called by content objects
 /// @param tag Human readable string denoting the target tag
 /// @param _removedSlot the slot to remove from the Listing data structure
 function removeListing(string memory tag, uint256 _removedSlot) external;
@@ -176,23 +181,33 @@ function getTagTotal(string memory tag)
 
 \subsection{Primitive Mechanics}
 \label{PrimitiveMechanics}
-A representation vector of a content object is constructed by assigning weights to relevant tags. 
-The weight attributable to a tag is proportional to the amount of token staked w.r.t that tag
-Candidate weighting cost function: 
 
+\subsubsection{Economics}
+The weight vector of a content object (section \ref{ContentObjectDefinition}) is constructed by assigning weights to relevant attributes (equation \ref{eq:weightVector}). In order for a network participant to assign a weight to an attribute for a given content object, the participant must stake economic value (i.e. lock up tokens) in an amount proportional to the magnitude of the weight. A candidate staking function (inspired by the concentrated liquidity interval spacing introduced in Uniswap V3 \cite{adams2021uniswap}) is: 
 \begin{equation}
-    stake_i = 1.0001^{w_i}
+\label{eq:stakefunction}
+    stake_{n,i} = 1.0001^{w_{n,i}}
 \end{equation}
 
-As the desired target weight increases linearly, the amount of stake required to achieve that target weight increases exponentially, disincentivizing frivolous weighting of genuinely unrelated tags and also normalizing the weighting power of large token holders to make it more difficult to grossly overweight high-demand tags. 
-A non-zero minimum weight could be imposed to further disincentivize applying small staking amounts to tags that are not actually relevant to a content object
+In this model, increasing a content object's attribute weighting by $1$ unit requires $0.01\%$ more staked token value. Hence, as the desired target weight increases linearly, the amount of stake required to achieve that target weight increases exponentially, disincentivizing frivolous weighting of genuinely unrelated tags and also normalizing the weighting power of large token holders to make it more difficult to grossly overweight high-demand tags. 
+A non-zero minimum weight to enter the global ranking namespace could optionally be imposed to further disincentivize applying small staking amounts to attributes that are not actually relevant to a content object.
 
-There is economic cost to curating the representation vector of a content object
-Assigning weight to tags that are not actually relevant to your content object locks up capital 
-When a content author stakes token to a given tag/keyword in their content object, this results in a registration of that content object in a global linked list that tracks all content objects staking that particular tag; the content object with the most stake for a given tag takes the head slot, second most gets the second slot, and so on. 
-Thus, the global ordering for a tag effectively forms an open order book for ranking of content associated with a given tag. Content authors and end users both have direct insight into the relative ranking of content for a given tag/attribute. 
+As explained in section \ref{GlobalRankingDefinition}, content objects are discoverable through a global ranking namespace, where each attribute (that has at least one associated content object) maps to a double linked list data structure. The entries are linked in order of their weights, which requires stake proportional to equation \ref{eq:stakefunction} to obtain. Thus, the global ordering for an attribute effectively forms an open order book for ranking of content associated with a given tag. Content authors and end users both have direct insight into the relative ranking of content for a given tag/attribute. 
 
-Staking economic value does not result in rewards issued directly from the protocol itself to the depositor, instead it boosts the discoverability and visibility of a content object in a marketplace setting, leading to greater likelihood of end user transactions and thus revenue. Depositors can rearrange their stake among different tags as they search the state space for the correct tags for their target audience and can reclaim all of their stake and exit the market if necessary. This is an important distinction from existing staking models. 
-Popular tags (i.e. tags that are relevant to the largest number of users) will cost more for a higher number of impressions while tags associated with more specialized audiences will likely be cheaper.
+Staking economic value does not result in rewards issued directly from the protocol itself to the depositor. Instead, it boosts the discoverability and visibility of a content object in a marketplace setting given a likeness metric that meets the criteria specified in section \ref{LikenessMetricDefinition}, leading to greater likelihood of end user engagement through transactions and thus revenue. Depositors can rearrange their stake among different attributes as they search the state space for the correct attribute allocation for their target audience and can reclaim all of their stake and exit the market if necessary. This is an important distinction from existing staking models. Popular tags (i.e. tags that are relevant to the largest number of users) will cost more for a higher number of impressions while tags associated with more specialized audiences will likely be cheaper.
 
-The economic cost of attribute staking coupled with ERC-7529 ensures that spoofing content to attack the recommender system is difficult and costly and makes it simple to implement client-side verification. Additionally, staked tokens are subject to forfeiture if the token holder community deems the content object to be detrimental to the associated marketplace. Therefore, stake for ranking has a natural resistance to sybil attacks from bad authors and incentives to construct an accurate representation vector for their content since it requires capital to be locked in proportion to the representation weights. 
+Another optional feature, depending on the application, is to couple stake for ranking with a DAO. The DAO can be used to govern the global ranking namespace. For example, staked tokens could be made subject to forfeiture if the token holder community of the DAO deems the content object to be detrimental to the associated marketplace. 
+
+\subsubsection{Content Delivery}
+
+Unlike existing recommender systems which serve content through through traditional content distribution networks (CDNs), rankings and content in the stake for ranking setting are naturally delivered through decentralized system. This makes it much more difficult to track what users preferences without their concent. 
+
+Global rankings are themselves hosted directly on an appropriated public blockchain network, thus rankings and weight vectors can be retrieved through any supporting RPC provider or in the extreme case, a user can always host their own node. Off-chain content pointed do by content object smart contracts can itself be hosted in content-addressible CDNs like IPFS or Arweave, meaning that a user client could fetch off-chain content through any public gateway or, again, embed the appropriate node in the user client itself. 
+
+\subsubsection{Searchability and Spoof Resistance}
+
+While staking economic value helps to mitigate the effectiveness of sybil attacks against the content corpus of recommender system, it alone cannot prevent a publisher for masquerading as another publisher. Leveraging the standard proposed in ERC-7529 (see \cite{chapman2023erc7529}) would allow an end user client to independently verify that a content object is associated with a know DNS domain (e.g. snickerdoodle.com). 
+
+An additional benefit of being able to link a business' DNS domain with a smart contract-based content object is searchability. A user can easily find content posted by domains they are familiar with using the discoverability feature of ERC-7529, then leverage the global ranking namespace to find other content that is closely related that content based on the staked attributes. 
+
+Combining stake for ranking with ERC-7529 leads to a fully decentralized recommender system that is quite challenging to manipulate via spoofing or sybil attacks. 
