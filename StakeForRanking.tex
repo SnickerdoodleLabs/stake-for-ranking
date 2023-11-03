@@ -14,7 +14,7 @@ Stake for ranking attempts to address some of the shortcomings of closed-source,
 \subsubsection{Content Objects}
 \label{ContentObjectDefinition}
 
-A content object is an on-chain asset (a smart contract) owned or operated by a content author and can be an ERC-721 NFT, an ERC-20 token, or any other contract-based asset type. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an nft or fungible token (thus the need to attract end users to your content object in the first place). 
+A content object is an on-chain asset (a smart contract) owned or operated by a content author and can be an ERC-721 NFT, an ERC-20 token, or any other contract-based asset type. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an NFT or fungible token (thus the need to attract end users to your content object in the first place). 
 
 A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute string (i.e. a human-readable tag) to a weight. For content object, $n$, this mapping represents an infinite dimensional sparse vector of weights, $w_n \in \mathbb{N}^{+\infty}$. Hence, we place no limits on the potential number of attributes that might be of use to the recommender system and for programming convenience in the context of the Ethereum Virtual Machine \cite{wood2014ethereum} (which works nicely with unsigned integers), weights are taken to be non-negative integer values. 
 
@@ -77,7 +77,7 @@ This section describes a minimal interface specification necessary for stake for
 
 Content object contracts must have functions for staking and destaking economic value with respect to an attribute that is relevant to it. Smart contracts implementing the content object interface given here are responsible for calling the requisite functions of the smart contract hosting the global ranking storage variable (section \ref{GlobalRankingInterface}). 
 
-\begin{lstlisting}[language=Java, caption=a minimal interface for a content object]
+\begin{lstlisting}[language=Java, caption=A minimal interface for a content object.]
 /// @notice Retrieve all attributes and associated weights, we assume the size of this array is small enough to return without pagination
 function getTagArray() external view returns (Tag[] memory);
 
@@ -116,7 +116,7 @@ function removeListing(string memory tag) external;
 
 Contracts which host a global ranking storage variable must have functions for retrieving the current entries of the doubly-linked list for a given attribute. Functions which manipulate the global ranking storage variable are responsible for ensuring that only compatible smart contracts are able to call them (see section \ref{GlobalRankingDefinition} regarding the factory pattern assumption).
 
-\begin{lstlisting}[language=Java, caption=a minimal interface for reading and writing to the global ranking namespace]
+\begin{lstlisting}[language=Java, caption=A minimal interface for reading and writing to the global ranking namespace.]
 /// @notice Initializes a doubly-linked list under the given attribute
 /// @dev Should only be called by content objects
 /// @param tag Human readable string denoting the target attribute to insert into global ranking
@@ -200,9 +200,9 @@ Another optional feature, depending on the application, is to couple stake for r
 
 \subsubsection{Content Delivery}
 
-Unlike existing recommender systems which serve content through through traditional content distribution networks (CDNs), rankings and content in the stake for ranking setting are naturally delivered through decentralized system. This makes it much more difficult to track what users preferences without their concent. 
+Unlike existing recommender systems which serve content through traditional content distribution networks (CDNs), rankings and content in the stake for ranking setting are naturally delivered through decentralized systems. This makes it much more difficult to track what users preferences without their consent. 
 
-Global rankings are themselves hosted directly on an appropriated public blockchain network, thus rankings and weight vectors can be retrieved through any supporting RPC provider or in the extreme case, a user can always host their own node. Off-chain content pointed do by content object smart contracts can itself be hosted in content-addressible CDNs like IPFS or Arweave, meaning that a user client could fetch off-chain content through any public gateway or, again, embed the appropriate node in the user client itself. 
+Global rankings are themselves hosted directly on an appropriated public blockchain network, thus rankings and weight vectors can be retrieved through any supporting RPC provider or in the extreme case, a user can always host their own node. Off-chain content pointed to by content object smart contracts can itself be hosted in content-addressable CDNs like IPFS or Arweave, meaning that a user client could fetch off-chain content through any public gateway or, again, embed the appropriate node in the user client itself. 
 
 \subsubsection{Searchability and Spoof Resistance}
 

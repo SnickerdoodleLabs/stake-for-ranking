@@ -12,7 +12,7 @@
         \node [factoryblock,  node distance=5cm] (FACTORY) {Contract Factory \& Global Ranking};
         \node [instance, below of=FACTORY,  node distance=3cm] (CONTRACT2) {Content Object 2};
         \node [instance, left of=CONTRACT2,  node distance=4cm] (CONTRACT1) {Content Object 1};
-        \node [instance, right of=CONTRACT2,  node distance=4cm] (CONTRACT3) {Content Object ...};
+        \node [instance, right of=CONTRACT2,  node distance=4cm] (CONTRACT3) {Content Object N};
         % Draw edges
         \path [line] (FACTORY) -| node [near start, above] {deploy} (CONTRACT1);
         \path [line] (CONTRACT1) -- node [near end, left] {claim rank} (FACTORY);
