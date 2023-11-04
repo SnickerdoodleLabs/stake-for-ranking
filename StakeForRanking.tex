@@ -7,14 +7,18 @@ Stake for ranking attempts to address some of the shortcomings of closed-source,
     \item Transparent ranking mechanics via auditable on-chain logic
     \item Sybil resistance against spam listings due to economic costs of entering recommender system and curating attribute weights
     \item Enhanced end-user privacy due to decentralized content delivery and rankings hosted on a public blockchain
-    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based moderation
+    \item Can be coupled with ERC-7529 \cite{chapman2023erc7529} for enhanced content spoofing protection and DNS/domain-based search and moderation
 \end{itemize}
 
 \subsection{Components}
+\label{Components}
+
+This section will describe the minimal components (and their roles) necessary for implementing the stake for ranking cryptoeconomic primitive. Depending on the usecase, there may likely be other required components for a proper implementation. 
+
 \subsubsection{Content Objects}
 \label{ContentObjectDefinition}
 
-A content object is an on-chain asset (a smart contract) owned or operated by a content author and can be an ERC-721 NFT, an ERC-20 token, or any other contract-based asset type. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an NFT or fungible token (thus the need to attract end users to your content object in the first place). 
+A \textit{content object} is an on-chain asset (a smart contract) owned or operated by a \textit{content author} and can be an ERC-721 NFT, an ERC-20 token, or any other smart contract-based data structure. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an NFT or fungible token (thus the need to attract end users to your content object in the first place). 
 
 A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute string (i.e. a human-readable tag) to a weight. For content object, $n$, this mapping represents an infinite dimensional sparse vector of weights, $w_n \in \mathbb{N}^{+\infty}$. Hence, we place no limits on the potential number of attributes that might be of use to the recommender system and for programming convenience in the context of the Ethereum Virtual Machine \cite{wood2014ethereum} (which works nicely with unsigned integers), weights are taken to be non-negative integer values. 
 
@@ -41,7 +45,7 @@ The weight, $w_{k_i,i}$, belongs to the $k^{th}$ highest ranked content object f
 
 This means that content objects that do not assign a non-zero weight to attribute $i$ do not appear in that attribute's corresponding rankings, so $0 \leq k_i \leq N$ where $N$ is the total number of content objects globally. Section \ref{InterfaceDefinition} will outline the methods for content authors to call in order to enter this global ranking for a given attribute. 
 
-Doubly linked lists are an ideal data structure for tracking dynamically allocated content rankings in a smart contract setting due to the constant complexity of insertion and deletion of a list entry (gas costs remain constant as the size of the list grows). Furthermore, entries can easily be traversed in a paginated fashion in either ascending or descending order. 
+Doubly linked lists are an ideal data structure for tracking dynamically allocated ordered lists in a smart contract setting due to the constant complexity of insertion and deletion of a list entry (gas costs remain constant as the size of the list grows). Furthermore, entries can easily be traversed in a paginated fashion in either ascending or descending order. 
 
 \subsubsection{Likeness metric}
 \label{LikenessMetricDefinition}
@@ -78,37 +82,46 @@ This section describes a minimal interface specification necessary for stake for
 Content object contracts must have functions for staking and destaking economic value with respect to an attribute that is relevant to it. Smart contracts implementing the content object interface given here are responsible for calling the requisite functions of the smart contract hosting the global ranking storage variable (section \ref{GlobalRankingInterface}). 
 
 \begin{lstlisting}[language=Java, caption=A minimal interface for a content object.]
-/// @notice Retrieve all attributes and associated weights, we assume the size of this array is small enough to return without pagination
+/// @notice Retrieve all attributes and associated weights from the content object
+/// @dev Its assumed the size of this array is small enough to return without pagination
 function getTagArray() external view returns (Tag[] memory);
 
-/// @notice Adds a new attribute to the global ranking namespace and stakes it for this content object
-/// @dev max(uint256) -> _newSlot -> 0
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _newSlot New linked list entry that will point to _downstream slot
-function newGlobalTag(string memory tag, uint256 _newSlot) external;
+/// @notice Adds a new attribute to the global ranking namespace and pulls stake from the caller account
+/// @dev Global ranking linked list: max(uint256) <-> _newWeight <-> 0
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _newWeight Weight to assign to new global attribute listing
+function newGlobalTag(string memory attribute, uint256 _newWeight) external;
 
-/// @notice Stakes an attribute that is already tracked by the global ranking namespace but hasn't been staked by this content object yet
-/// @dev  _newSlot -> _existingSlot
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _newSlot New linked list entry that will point to _downstream slot
-/// @param _existingSlot upstream pointer that will point to _newSlot
-function newLocalTagUpstream(string memory tag, uint256 _newSlot, uint256 _existingSlot) external;
+/// @notice Assigns weight to an attribute that is already tracked by the global ranking namespace but hasn't been weighted by this content object yet, pulls stake from the caller account
+/// @dev  Global ranking linked list: _newWeight <-> _existingWeight
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _newWeight New linked list entry that will point to _existingWeight listing
+/// @param _existingWeight upstream listing that will point to _newWeight
+function newLocalTagUpstream(
+        string memory attribute, 
+        uint256 _newWeight, 
+        uint256 _existingWeight
+    ) external;
 
-/// @notice Stakes an attribute that is already tracked by the global ranking namespace but hasn't been staked by this content object yet
-/// @dev  _existingSlot -> _newSlot
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _existingSlot upstream pointer that will point to _newSlot
-/// @param _newSlot New linked list entry that will point to _downstream slot
-function newLocalTagDownstream(string memory tag, uint256 _existingSlot, uint256 _newSlot) external;
+/// @notice Assigns weight to an attribute that is already tracked by the global ranking namespace but hasn't been weighted by this content object yet, pulls stake from the caller account
+/// @dev  Global ranking linked list: _existingWeight <-> _newWeight
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _existingWeight upstream listing that will point to _newWeight
+/// @param _newWeight New linked list entry that will point to _existingWeight listing
+function newLocalTagDownstream(
+        string memory attribute, 
+        uint256 _existingWeight, 
+        uint256 _newWeight
+    ) external;
 
-/// @notice Replaces an existing listing that has expired (works for head and tail listings)
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _slot The expired slot to replace with a new listing
-function replaceExpiredListing(tring memory tag, uint256 _slot) external;
+/// @notice Replaces an existing listing that has expired 
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _weight The expired slot to replace with a new listing
+function replaceExpiredListing(tring memory attribute, uint256 _weight) external;
 
 /// @notice Removes this contract's listing under the specified tag
-/// @param tag Human readable string denoting the target tag to destake
-function removeListing(string memory tag) external;
+/// @param attribute Human readable string denoting the target attribute to destake
+function removeListing(string memory attribute) external;
 \end{lstlisting}
 
 \subsubsection{Global Ranking Linked List}
@@ -119,61 +132,80 @@ Contracts which host a global ranking storage variable must have functions for r
 \begin{lstlisting}[language=Java, caption=A minimal interface for reading and writing to the global ranking namespace.]
 /// @notice Initializes a doubly-linked list under the given attribute
 /// @dev Should only be called by content objects
-/// @param tag Human readable string denoting the target attribute to insert into global ranking
-/// @param _newHead Downstream pointer that will be pointed to by _newSlot
-function initializeTag(string memory tag, uint256 _newHead) external;
+/// @dev Global ranking linked list: max(uint256) <-> _newWeight <-> 0
+/// @param attribute Human readable string denoting the target attribute to insert into global ranking
+/// @param _newWeight First list entry between max(uint256) and 0
+function initializeAttribute(string memory attribute, uint256 _newWeight) external;
 
 /// @notice Inserts a new listing into the doubly-linked Listings mapping
-/// @dev _newSlot <-> _existingSlot 
+/// @dev Global ranking linked list: _newWeight <-> _existingWeight 
 /// @dev Should only be called by content objects
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _newSlot New linked list entry that will point to the Listing at _existingSlot 
-/// @param _existingSlot Listing slot that will be pointed to by the new Listing at _newSlot 
-function insertUpstream(string memory tag, uint256 _newSlot, uint256 _existingSlot) external;
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _newWeight New linked list entry that will point to the Listing at _existingWeight 
+/// @param _existingWeight Listing slot that will be pointed to by the new Listing at _newWeight 
+function insertUpstream(
+        string memory attribute, 
+        uint256 _newWeight, 
+        uint256 _existingWeight
+    ) external;
 
 /// @notice Inserts a new listing into the doubly-linked Listings mapping
-/// @dev _existingSlot <-> _newSlot
+/// @dev Global ranking linked list: _existingWeight <-> _newWeight
 /// @dev Should only be called by content objects
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _existingSlot Listing slot that will be pointed to by the new Listing at _newSlot  
-/// @param _newSlot New linked list entry that will point to the Listing at _existingSlot 
-function insertDownstream(string memory tag, uint256 _existingSlot, uint256 _newSlot) external;
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _existingWeight Listing slot that will be pointed to by the new Listing at _newWeight  
+/// @param _newWeight New linked list entry that will point to the Listing at _existingWeight 
+function insertDownstream(
+        string memory attribute, 
+        uint256 _existingWeight, 
+        uint256 _newWeight
+    ) external;
 
 /// @notice Replaces an existing listing that has expired (works for head and tail listings)
 /// @dev Should only be called by content objects
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _slot The expired slot to replace with a new listing
-function replaceExpiredListing(tring memory tag, uint256 _slot) external;
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _weight The expired weight to replace with a new listing
+function replaceExpiredListing(tring memory attribute, uint256 _weight) external;
 
 /// @notice removes a listing in the marketplace listing map
 /// @dev Should only be called by content objects
-/// @param tag Human readable string denoting the target tag
-/// @param _removedSlot the slot to remove from the Listing data structure
-function removeListing(string memory tag, uint256 _removedSlot) external;
+/// @param tag Human readable string denoting the target attribute
+/// @param _removedWeight the weight to remove from the Listing data structure
+function removeListing(string memory attribute, uint256 _removedWeight) external;
 
 /// @notice Returns an array of Listings from the marketplace linked list from highest to lowest ranked
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _startingSlot slot to start at in the linked list
-/// @param numSlots number of entries to return
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _startingWeight Weight to start at in the ranking linked list
+/// @param numListings number of entries to return
 /// @param filterActive boolean flag indicating if the results should include expired listings (false) or not (true)
-function getListingsForward(string memory tag, uint256 _startingSlot, uint256 numSlots, bool filterActive) 
+function getListingsForward(
+        string memory attribute, 
+        uint256 _startingWeight, 
+        uint256 numListings, 
+        bool filterActive
+    ) 
     external 
     view 
     returns (string [] memory, Listing [] memory);
 
 /// @notice Returns an array of Listings from the marketplace linked list from lowest to highest ranked
-/// @param tag Human readable string denoting the target tag to stake
-/// @param _startingSlot slot to start at in the linked list
-/// @param numSlots number of entries to return
+/// @param attribute Human readable string denoting the target attribute to stake
+/// @param _startingWeight Weight to start at in the linked list
+/// @param numListings number of entries to return
 /// @param filterActive boolean flag indicating if the results should include expired listings (false) or not (true)
-function getListingsBackward(string memory tag, uint256 _startingSlot, uint256 numSlots, bool filterActive);
+function getListingsBackward(
+        string memory attribute, 
+        uint256 _startingWeight, 
+        uint256 numListings, 
+        bool filterActive
+    )
     external 
     view 
     returns (string [] memory, Listing [] memory);
 
-/// @notice Returns the total number of listings under a given tag (including expired listings which have not been removed)
-/// @param tag Human readable string denoting the target tag to stake
-function getTagTotal(string memory tag)
+/// @notice Returns the total number of listings under a given attribute (including expired listings which have not been removed)
+/// @param attribute Human readable string denoting the target attribute to stake
+function getTagTotal(string memory attribute)
     external 
     view 
     returns (uint256);
@@ -181,6 +213,8 @@ function getTagTotal(string memory tag)
 
 \subsection{Mechanics}
 \label{PrimitiveMechanics}
+
+This section describes the usage of the components described in section \ref{Components}. Specifically, this section describes the minimal token mechanics necessary to implement for stake for ranking as well as optional token mechanics which could be introduced depending on the usecase. This section also discusses aspects of content delivery and spoof resistance which are not necessarily tied to the use of stake for ranking, but which compliment it. 
 
 \subsubsection{Economics}
 The weight vector of a content object (section \ref{ContentObjectDefinition}) is constructed by assigning weights to relevant attributes (equation \ref{eq:weightVector}). In order for a network participant to assign a weight to an attribute for a given content object, the participant must stake economic value (i.e. lock up tokens) in an amount proportional to the magnitude of the weight. A candidate staking function (inspired by the concentrated liquidity interval spacing introduced in Uniswap V3 \cite{adams2021uniswap}) is: 
