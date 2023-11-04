@@ -58,7 +58,7 @@ Consider a user who has shown interest in, or interacted with a set of content o
     W = U \Sigma V^T
 \end{equation}
 
-By definition, $U$, is an orthogonal matrix, (i.e. $U^TU = I$), and captures the span of set of weight vectors. Importantly, the columns of the matrix $U$ are optimally ordered, meaning the the first column of $U$ (corresponding to the largest diagonal entry of $\Sigma$) represents the best single-vector approximation of the set $\{..., w_n,...\}$. 
+By definition, $U$, is an orthogonal matrix, (i.e. $U^TU = I$), and captures the span of set of weight vectors. Importantly, the columns of the matrix $U$ are optimally ordered, meaning that the first column of $U$ (corresponding to the largest diagonal entry of $\Sigma$) represents the best single-vector approximation of the set $\{..., w_n,...\}$. 
 
 As a simple and computationally efficient model for vectorizing a user's interests, we take the first column of $U$, which will be referred to as $\Tilde{u}$, as our user feature vector as it encapsulates the optimal (in the Euclidean norm) representation of all content they've previously interacted with in a single vector.
 
@@ -90,14 +90,14 @@ function getTagArray() external view returns (Tag[] memory);
 /// @dev Global ranking linked list: max(uint256) <-> _newWeight <-> 0
 /// @param attribute Human readable string denoting the target attribute to stake
 /// @param _newWeight Weight to assign to new global attribute listing
-function newGlobalTag(string memory attribute, uint256 _newWeight) external;
+function newGlobalAttribute(string memory attribute, uint256 _newWeight) external;
 
 /// @notice Assigns weight to an attribute that is already tracked by the global ranking namespace but hasn't been weighted by this content object yet, pulls stake from the caller account
 /// @dev  Global ranking linked list: _newWeight <-> _existingWeight
 /// @param attribute Human readable string denoting the target attribute to stake
 /// @param _newWeight New linked list entry that will point to _existingWeight listing
 /// @param _existingWeight upstream listing that will point to _newWeight
-function newLocalTagUpstream(
+function newLocalAttributeUpstream(
         string memory attribute, 
         uint256 _newWeight, 
         uint256 _existingWeight
@@ -108,7 +108,7 @@ function newLocalTagUpstream(
 /// @param attribute Human readable string denoting the target attribute to stake
 /// @param _existingWeight upstream listing that will point to _newWeight
 /// @param _newWeight New linked list entry that will point to _existingWeight listing
-function newLocalTagDownstream(
+function newLocalAttributeDownstream(
         string memory attribute, 
         uint256 _existingWeight, 
         uint256 _newWeight
