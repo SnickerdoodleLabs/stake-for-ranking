@@ -18,7 +18,7 @@ This section will describe the minimal components (and their roles) necessary fo
 \subsubsection{Content Objects}
 \label{ContentObjectDefinition}
 
-A \textit{content object} is an on-chain asset (a smart contract) owned or operated by a \textit{content author} and can be an ERC-721 NFT, an ERC-20 token, or any other smart contract-based data structure. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an NFT or fungible token (thus the need to attract end users to your content object in the first place). 
+A \textit{content object} is an on-chain asset (a smart contract) owned or operated by a \textit{content author} and can be an ERC-721 compatible non-fungible asset, an ERC-20 token, or any other smart contract-based data structure. It is also assumed that the content object is some kind of asset that an end-user will be transacting with directly, like paying into a contract to mint an NFT or fungible token (thus the need to attract end users to your content object in the first place). 
 
 A content object will possess an interface defined in section \ref{InterfaceDefinition} and a member variable mapping an attribute string (i.e. a human-readable tag) to a weight. For content object, $n$, this mapping represents an infinite dimensional sparse vector of weights, $w_n \in \mathbb{N}^{+\infty}$. Hence, we place no limits on the potential number of attributes that might be of use to the recommender system and for programming convenience in the context of the Ethereum Virtual Machine \cite{wood2014ethereum} (which works nicely with unsigned integers), weights are taken to be non-negative integer values. 
 
@@ -33,7 +33,7 @@ We take the convention that the weight given to  attribute $i$ is the value of t
 \label{GlobalRankingDefinition}
 
 \input{FactoryRankingTikz}
-The smart contract architecture is assumed to be based on a factory pattern (as depicted in figure \ref{fig:FactoryRanking}), although it is not strictly necessary. Contract factories are a common pattern found in NFT marketplaces (like Rarible and Opensea) and decentralized finance protocols (like Uniswap and Aave). A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each tag. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
+The smart contract architecture is assumed to be based on a factory pattern (as depicted in figure \ref{fig:FactoryRanking}), although it is not strictly necessary. Contract factories are a common pattern found in NFT marketplaces (like Rarible and Opensea) and decentralized finance protocols (like Uniswap and Aave). A contract factory is a natural location to host the data structures responsible for storing the global ranking of content objects with respect to each attribute. It also allows for the ranking structure to exclude the listing of content objects that were not deployed through standard template that would be defined by a contract factory. 
 
 Global ranking can be stored in a mapping variable that maps from an attribute string to a doubly linked list:
 
